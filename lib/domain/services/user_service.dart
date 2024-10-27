@@ -1,28 +1,24 @@
 import 'dart:math';
 
+import 'package:mvvm_counter/domain/data_providers/user_data_providers.dart';
 import 'package:mvvm_counter/domain/entity/user.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class UserService {
-  var _user = User(0);
-  User get user => _user;
+  final userDataProvider = UserDataProvider();
+  User get user => userDataProvider.user;
 
-  Future<void> loadValue() async {
-    final sharedPrefernces = await SharedPreferences.getInstance();
-    final age = sharedPrefernces.getInt('age') ?? 0;
-    _user = User(age);
-  }
-
-  Future<void> saveValue() async {
-    final sharedPrefernces = await SharedPreferences.getInstance();
-    sharedPrefernces.setInt('age', _user.age);
+  Future<void> initialize() async {
+    userDataProvider.loadValue();
   }
 
   incrementAge() {
-    _user = _user.copyWith(age: _user.age + 1);
+    final user = userDataProvider.user;
+    userDataProvider.user = user.copyWith(age: user.age + 1);
   }
 
   decrementAge() {
-    _user = _user.copyWith(age: max(_user.age - 1, 0));
+    final user = userDataProvider.user;
+
+    userDataProvider.user = user.copyWith(age: max(user.age - 1, 0));
   }
 }
