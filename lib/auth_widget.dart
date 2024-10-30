@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 enum _ViewModelAuthBtnState { CanSubmit, AuthProcess, Disable }
 
 class ViewModelService {
-  String? authErrorTitle;
+  String authErrorTitle = '';
   String password = '';
   String login = '';
   bool isAuthInProcess = false;
@@ -37,8 +37,8 @@ class ViewModelService {
 }
 
 class _ViewModel extends ChangeNotifier {
-  var _state = ViewModelService();
-  var _authService = AuthService();
+  final _state = ViewModelService();
+  final _authService = AuthService();
   ViewModelService get state => _state;
   void changeLogin(String value) {
     if (_state.login == value) return;
@@ -57,7 +57,7 @@ class _ViewModel extends ChangeNotifier {
     final login = _state.login;
     final psw = _state.password;
     if (login.isEmpty || psw.isEmpty) return;
-    _state.authErrorTitle = null;
+    _state.authErrorTitle = '';
     _state.isAuthInProcess = true;
     notifyListeners();
 
@@ -148,7 +148,7 @@ class _ErrorTitleWidget extends StatelessWidget {
     final authErrorTitle =
         context.select((_ViewModel value) => value.state.authErrorTitle);
 
-    return Text(authErrorTitle ?? '');
+    return Text(authErrorTitle);
   }
 }
 
