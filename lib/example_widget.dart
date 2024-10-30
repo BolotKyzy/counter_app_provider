@@ -7,7 +7,7 @@ class ViewModelService {
   ViewModelService({required this.ageTitle});
 }
 
-class ViewModel extends ChangeNotifier {
+class _ViewModel extends ChangeNotifier {
   final _userService = UserService();
   var _state = ViewModelService(ageTitle: '');
   ViewModelService get state => _state;
@@ -17,7 +17,7 @@ class ViewModel extends ChangeNotifier {
     _updateState();
   }
 
-  ViewModel() {
+  _ViewModel() {
     loadValue();
   }
 
@@ -40,6 +40,12 @@ class ViewModel extends ChangeNotifier {
 
 class ExampleWidget extends StatelessWidget {
   const ExampleWidget({super.key});
+
+  static Widget create() {
+    return ChangeNotifierProvider(
+        create: (_) => _ViewModel(), child: ExampleWidget());
+  }
+
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
@@ -66,7 +72,7 @@ class _AgeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final age = context.select((ViewModel vm) => vm.state.ageTitle);
+    final age = context.select((_ViewModel vm) => vm.state.ageTitle);
     return Text(age);
   }
 }
@@ -76,7 +82,7 @@ class AgeIncWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.read<ViewModel>();
+    final viewModel = context.read<_ViewModel>();
     return ElevatedButton(
         onPressed: viewModel.onIncBtnPressed, child: const Text("+"));
   }
@@ -87,7 +93,7 @@ class AgeDecWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.read<ViewModel>();
+    final viewModel = context.read<_ViewModel>();
     return ElevatedButton(
         onPressed: viewModel.onDecBtnPressed, child: const Text("-"));
   }
