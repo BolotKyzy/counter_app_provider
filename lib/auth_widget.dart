@@ -6,38 +6,34 @@ import 'package:provider/provider.dart';
 enum _ViewModelAuthBtnState { CanSubmit, AuthProcess, Disable }
 
 class ViewModelService {
-  final String authErrorTitle;
-  final String? password;
-  final String? login;
-  final bool isAuthInProcess;
+  String? authErrorTitle;
+  String password = '';
+  String login = '';
+  bool isAuthInProcess = false;
   _ViewModelAuthBtnState get authBtnState {
     if (isAuthInProcess) {
       return _ViewModelAuthBtnState.AuthProcess;
-    } else if (login!.isNotEmpty && password!.isNotEmpty) {
+    } else if (login.isNotEmpty && password.isNotEmpty) {
       return _ViewModelAuthBtnState.CanSubmit;
     } else {
       return _ViewModelAuthBtnState.Disable;
     }
   }
 
-  ViewModelService(
-      {this.isAuthInProcess = false,
-      this.authErrorTitle = '',
-      this.login = '',
-      this.password = ''});
+  ViewModelService();
 
-  ViewModelService copyWith(
-      {String? authErrorTitle,
-      String? password,
-      String? login,
-      bool? isAuthInProcess,
-      _ViewModelAuthBtnState? authBtnState}) {
-    return ViewModelService(
-        authErrorTitle: authErrorTitle ?? this.authErrorTitle,
-        login: login ?? this.login,
-        isAuthInProcess: isAuthInProcess ?? this.isAuthInProcess,
-        password: password ?? this.password);
-  }
+  // ViewModelService copyWith(
+  //     {String? authErrorTitle,
+  //     String? password,
+  //     String? login,
+  //     bool? isAuthInProcess,
+  //     _ViewModelAuthBtnState? authBtnState}) {
+  //   return ViewModelService(
+  //       authErrorTitle: authErrorTitle ?? this.authErrorTitle,
+  //       login: login ?? this.login,
+  //       isAuthInProcess: isAuthInProcess ?? this.isAuthInProcess,
+  //       password: password ?? this.password);
+  // }
 }
 
 class _ViewModel extends ChangeNotifier {
@@ -46,36 +42,36 @@ class _ViewModel extends ChangeNotifier {
   ViewModelService get state => _state;
   void changeLogin(String value) {
     if (_state.login == value) return;
-    _state = _state.copyWith(login: value);
+    _state.login = value;
     notifyListeners();
   }
 
   void changePassword(String value) {
     if (_state.password == value) return;
 
-    _state = _state.copyWith(password: value);
+    _state.password = value;
     notifyListeners();
   }
 
   Future<void> onAuthBtnPressed() async {
     final login = _state.login;
     final psw = _state.password;
-    if (login!.isEmpty || psw!.isEmpty) return;
-    _state = _state.copyWith(authErrorTitle: "", isAuthInProcess: true);
+    if (login.isEmpty || psw.isEmpty) return;
+    _state.authErrorTitle = null;
+    _state.isAuthInProcess = true;
     notifyListeners();
 
     try {
       await _authService.login(login, psw);
-      _state = _state.copyWith(isAuthInProcess: false);
+      _state.isAuthInProcess = false;
       notifyListeners();
     } on AuthApiProviderIncorretLoginDataError {
-      _state = _state.copyWith(
-          authErrorTitle: "Incorrect login or password",
-          isAuthInProcess: false);
+      _state.authErrorTitle = "Incorrect login or password";
+      _state.isAuthInProcess = false;
       notifyListeners();
     } catch (exeption) {
-      _state = _state.copyWith(
-          authErrorTitle: "Something is wrong", isAuthInProcess: false);
+      _state.authErrorTitle = "Something is wrong";
+      _state.isAuthInProcess = false;
       notifyListeners();
     }
   }
@@ -152,7 +148,7 @@ class _ErrorTitleWidget extends StatelessWidget {
     final authErrorTitle =
         context.select((_ViewModel value) => value.state.authErrorTitle);
 
-    return Text(authErrorTitle);
+    return Text(authErrorTitle ?? '');
   }
 }
 
