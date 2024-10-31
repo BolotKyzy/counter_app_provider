@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mvvm_counter/domain/services/auth_service.dart';
 import 'package:mvvm_counter/domain/services/user_service.dart';
 import 'package:provider/provider.dart';
 
@@ -8,6 +9,7 @@ class ViewModelService {
 }
 
 class _ViewModel extends ChangeNotifier {
+  final _authService = AuthService();
   final _userService = UserService();
   var _state = ViewModelService(ageTitle: '');
   ViewModelService get state => _state;
@@ -31,6 +33,11 @@ class _ViewModel extends ChangeNotifier {
     _updateState();
   }
 
+  Future<void> onLogoutPressed(BuildContext context) async {
+    await _authService.logout();
+    Navigator.of(context).pushNamedAndRemoveUntil('loader', (route) => false);
+  }
+
   void _updateState() {
     final user = _userService.user;
     _state = ViewModelService(ageTitle: user.age.toString());
@@ -48,8 +55,16 @@ class ExampleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: SafeArea(
+    final viewModel = context.read<_ViewModel>();
+    return Scaffold(
+      appBar: AppBar(
+        actions: [
+          ElevatedButton(
+              onPressed: () => viewModel.onLogoutPressed(context),
+              child: Text("Exit"))
+        ],
+      ),
+      body: const SafeArea(
           child: Center(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           _AgeWidget(),

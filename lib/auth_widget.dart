@@ -53,7 +53,7 @@ class _ViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> onAuthBtnPressed() async {
+  Future<void> onAuthBtnPressed(BuildContext context) async {
     final login = _state.login;
     final psw = _state.password;
     if (login.isEmpty || psw.isEmpty) return;
@@ -65,6 +65,7 @@ class _ViewModel extends ChangeNotifier {
       await _authService.login(login, psw);
       _state.isAuthInProcess = false;
       notifyListeners();
+      Navigator.of(context).pushNamedAndRemoveUntil('loader', (route) => false);
     } on AuthApiProviderIncorretLoginDataError {
       _state.authErrorTitle = "Incorrect login or password";
       _state.isAuthInProcess = false;
@@ -158,17 +159,17 @@ class _AuthBtnWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = context.read<_ViewModel>();
-
     final authBtnState =
         context.select((_ViewModel value) => value.state.authBtnState);
+    final onPress = authBtnState == _ViewModelAuthBtnState.CanSubmit
+        ? model.onAuthBtnPressed
+        : null;
 
     final Widget child = authBtnState == _ViewModelAuthBtnState.AuthProcess
         ? CircularProgressIndicator()
         : Text("Log in");
     return ElevatedButton(
-      onPressed: authBtnState == _ViewModelAuthBtnState.CanSubmit
-          ? model.onAuthBtnPressed
-          : null,
+      onPressed: () => onPress?.call(context),
       child: child,
     );
   }

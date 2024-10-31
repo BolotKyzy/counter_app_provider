@@ -12,9 +12,25 @@ class MainWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(routes: {
-      'auth': (_) => AuthWidget.create(),
-      'example': (_) => ExampleWidget.create()
-    }, home: LoaderWidget.create());
+    return MaterialApp(
+        onGenerateRoute: (RouteSettings settings) {
+          if (settings.name == 'auth') {
+            return PageRouteBuilder(
+                pageBuilder: (context, anumation1, animation2) =>
+                    AuthWidget.create(),
+                transitionDuration: Duration.zero);
+          } else if (settings.name == 'example') {
+            return PageRouteBuilder(
+                pageBuilder: (context, anumation1, animation2) =>
+                    ExampleWidget.create(),
+                transitionDuration: Duration.zero);
+          } else if (settings.name == 'loader') {
+            return PageRouteBuilder(
+                pageBuilder: (context, anumation1, animation2) =>
+                    LoaderWidget.create(),
+                transitionDuration: Duration.zero);
+          }
+        },
+        home: LoaderWidget.create());
   }
 }
