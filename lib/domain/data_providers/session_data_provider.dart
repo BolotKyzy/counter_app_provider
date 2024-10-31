@@ -8,7 +8,10 @@ class SessionDataProvider {
   final sharedPreferences = SharedPreferences.getInstance();
 
   Future<String?> apiKey() async {
-    return (await sharedPreferences).getString(SessionDataProviderKeys._apiKey);
+    final String? apikey =
+        (await sharedPreferences).getString(SessionDataProviderKeys._apiKey);
+    print(apikey);
+    return apikey;
   }
 
   Future<void> saveApiKey(String key) async {

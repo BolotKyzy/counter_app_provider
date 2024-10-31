@@ -12,6 +12,7 @@ class AuthService {
 
   Future<void> login(String login, String password) async {
     final _apiKey = await _authApiProvidr.login(login, password);
+    print("This is saved : $_apiKey");
     await _sessionDataProvider.saveApiKey(_apiKey!);
   }
 
