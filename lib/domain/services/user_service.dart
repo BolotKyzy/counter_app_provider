@@ -12,13 +12,16 @@ class UserService {
   }
 
   incrementAge() {
-    final user = userDataProvider.user;
+    final _user = userDataProvider.user;
+    // userDataProvider.saveValue(_user.copyWith(age: user.age + 1));
     userDataProvider.user = user.copyWith(age: user.age + 1);
+    userDataProvider.saveValue();
   }
 
   decrementAge() {
     final user = userDataProvider.user;
 
     userDataProvider.user = user.copyWith(age: max(user.age - 1, 0));
+    userDataProvider.saveValue();
   }
 }
